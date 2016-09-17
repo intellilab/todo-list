@@ -56,7 +56,6 @@ new Vue({
             this.clear()
             const date = new Date(this.current.year,
                 this.current.month, 1)
-            console.log(date)
             let index = date.getDay() - 1
             let i = 0
 
