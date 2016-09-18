@@ -16,6 +16,5 @@ new Vue({
             window.innerWidth < 900 || window.innerHeight < 500 ? this.normal = false :
                 this.normal = true
         }
-        document.write(navigator.appVersion)
     }
 })
