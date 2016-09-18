@@ -10,35 +10,9 @@
         <link rel="icon" href="https://cdn.lufei.so/icon/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" href="https://cdn.lufei.so/css/font.css" charset="utf-8">
     </head>
-    <body style="display: none">
-        <div class="main">
-            <div class="status">
-                <div class="left">To-do List</div>
-                <div class="right">
-                    <i v-text="months[current.month]"></i>
-                    <i v-text="current.year"></i>
-                    <i class="fa fa-caret-left" @click="prev"></i>
-                    <i class="fa fa-caret-right" @click="next"></i>
-                    <i class="fa fa-refresh" @click="refresh"></i>
-                </div>
-            </div>
-            <!-- calendar -->
-            <div class="calendar">
-                <ul class="week">
-                    <li v-for="x in weeks" v-text="x"></li>
-                </ul>
-                <div class="date">
-                    <ul class="col"
-                        v-for="week in date.weeks"
-                    >
-                        <li v-for="day in week"><i
-                            :class="{'today': day.flag}"
-                            v-text="day.day"
-                        ></i></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <body>
+        <normal v-if="normal"></normal>
+        <min v-if="!normal"></min>
         <!-- js -->
         <script src="https://cdn.lufei.so/js/vue.min.js"></script>
         <script src="index.js"></script>
