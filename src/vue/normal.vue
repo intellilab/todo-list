@@ -5,8 +5,7 @@
             <div class="right">
                 <i v-text="months[current.month]"></i>
                 <i v-text="current.year"></i>
-                <i class="fa fa-caret-left" @click="prev"></i>
-                <i class="fa fa-caret-right" @click="next"></i>
+                <i class="fa fa-caret-left" @click="prev"></i><i class="fa fa-caret-right" @click="next"></i>
                 <i class="fa fa-refresh" @click="refresh"></i>
             </div>
         </div>
@@ -19,7 +18,7 @@
                     v-for="week in date.weeks"
                 >
                     <li v-for="day in week"><i
-                        :class="{'today': day.flag}"
+                        :class="{'today': day.flag, 'hide': day.day == '-'}"
                         v-text="day.day"
                     ></i></li>
                 </ul>
@@ -97,7 +96,7 @@
                 })
                 // 前向填充
                 while (i < index) {
-                    this.date.weeks[i].push({day: null, flag: false})
+                    this.date.weeks[i].push({day: '-', flag: false})
                     i++
                 }
                 // 循环填充
@@ -112,7 +111,7 @@
                     })
                 }
                 // 后向填充
-                while (index < 6) this.date.weeks[++index].push({day: null, flag: false})
+                while (index < 6) this.date.weeks[++index].push({day: '-', flag: false})
             },
             clear() {
                 for (let i = 0; i < this.date.weeks.length; i++)

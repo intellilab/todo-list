@@ -5,8 +5,7 @@
             <div class="right">
                 <i v-text="months[current.month]"></i>
                 <i v-text="current.year"></i>
-                <i class="fa fa-caret-left" @click="prev"></i>
-                <i class="fa fa-caret-right" @click="next"></i>
+                <i class="fa fa-caret-left" @click="prev"></i><i class="fa fa-caret-right" @click="next"></i>
                 <i class="fa fa-refresh" @click="refresh"></i>
             </div>
         </div>

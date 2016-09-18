@@ -131,6 +131,12 @@ body {
                         line-height: 2rem;
                         text-align: center;
                         display: inline-block;
+                        /*
+                        * chrome 39下空字符在flex模式有问题
+                        */
+                        &.hide {
+                            visibility: hidden;
+                        }
                     }
                     .today {
                         border-radius: 1rem;
