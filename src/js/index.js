@@ -10,11 +10,11 @@ new Vue({
         min: require('../vue/min.vue')
     },
     ready() {
-        window.innerWidth < 900 || window.innerHeight < 500 ? this.normal = true :
+        window.innerWidth < 900 || window.innerHeight < 500 ? this.normal = false :
             this.normal = true
         window.onresize = e => {
             e.stopPropagation()
-            window.innerWidth < 900 || window.innerHeight < 500 ? this.normal = true :
+            window.innerWidth < 900 || window.innerHeight < 500 ? this.normal = false :
                 this.normal = true
         }
     }
