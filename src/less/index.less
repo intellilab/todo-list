@@ -256,11 +256,10 @@ body {
 }
 
 .panel {
-
     max-width: 800px;
     min-height: 300px;
-    width: 0;
-    height: 0;
+    width: 80%;
+    height: 50%;
     background-color: #fff;
     border-radius: .3rem;
     margin: auto;
@@ -271,16 +270,20 @@ body {
     right: 0;
     bottom: 0;
     box-shadow: 3px 3px 6px rgba(0, 0, 0, .6);
-    visibility: hidden;
     padding: 1rem;
     box-sizing: border-box;
-    width: 80%;
-    height: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    visibility: hidden;
+    transform: translateY(3rem);
+    opacity: 0;
+    transition: transform .5s, opacity .5s;
     .v-flex;
     &.active {
+        opacity: 1;
         visibility: visible;
+        transform: translateY(0);
     }
-
     h3 {
         color: green;
         text-align: center;
