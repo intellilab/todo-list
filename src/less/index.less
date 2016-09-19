@@ -128,6 +128,9 @@ body {
                     &:last-child {
                         border-bottom: none;
                     }
+                    &.enable {
+                        cursor: pointer;
+                    }
                     .flex;
                     i {
                         width: 2rem;
@@ -224,6 +227,7 @@ body {
         li {
             padding: .5rem;
             border-bottom: 1px solid rgba(255, 255, 255, .3);
+            cursor: pointer;
             &.today {
                 background-color: rgba(255, 255, 255, .2);
             }
@@ -233,7 +237,7 @@ body {
             .day, .week {
 
                 font-weight: lighter;
-                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+                text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
                 color: @font-color;
             }
             .day {
@@ -251,3 +255,141 @@ body {
     }
 }
 
+.panel {
+
+    max-width: 800px;
+    min-height: 300px;
+    width: 0;
+    height: 0;
+    background-color: #fff;
+    border-radius: .3rem;
+    margin: auto;
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, .6);
+    visibility: hidden;
+    padding: 1rem;
+    box-sizing: border-box;
+    width: 80%;
+    height: 50%;
+    .v-flex;
+    &.active {
+        visibility: visible;
+    }
+
+    h3 {
+        color: green;
+        text-align: center;
+        font-weight: lighter;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
+        letter-spacing: .1rem;
+        margin: 0;
+        padding: 0;
+    }
+    .in-box {
+        margin-top: 1rem;
+        border: 1px solid #ddd;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .075);
+        border-radius: .2rem;
+        padding: .5rem;
+        box-sizing: border-box;
+        display: block;
+        &.focus {
+            border-color: #51a7e8;
+            outline: none;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, .075),
+                0 0 6px rgba(81, 167, 232, .5);
+        }
+        input {
+            width: 100%;
+            border: 0;
+            font-size: .9rem;
+            color: #555;
+            font-family: "monospace", "Consolas", "Microsoft YaHei";
+        }
+        &.textarea {
+            padding: 0;
+            overflow: hidden;
+            align-items: stretch;
+            box-align: stretch;
+            -webkit-box-align: stretch;
+            .flex;
+            .v-flex;
+        }
+    }
+    textarea {
+        margin: 0;
+        padding: .5rem;
+        box-sizing: border-box;
+        resize: none;
+        border: 0;
+        font-size: .9rem;
+        font-family: "monospace", "Consolas", "Microsoft YaHei";
+        color: #555;
+        .flex;
+    }
+    .btn-box {
+        margin-top: 1rem;
+        text-align: right;
+        i {
+            cursor: pointer;
+            display: inline-block;
+            color: #fff;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.15);
+
+            border-radius: 3px;
+            padding: 3px 10px;
+            font-size: .9rem;
+            line-height: 20px;
+
+            -webkit-user-select: none;
+
+            &.ok {
+                background-color: #60b044;
+                background-image: -webkit-linear-gradient(#8add6d, #60b044);
+                background-image: linear-gradient(#8add6d, #60b044);
+                border-color: #5ca941;
+                border: 1px solid #4a993e;
+                &:hover {
+                    color: #fff;
+                    background-color: #569e3d;
+                    background-image: -webkit-linear-gradient(#79d858, #569e3d);
+                    background-image: linear-gradient(#79d858, #569e3d);
+                }
+                &.selected {
+                    text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+                    background-color: #569e3d;
+                    background-image: none;
+                    border-color: #418737;
+                }
+            }
+
+            &.cancel {
+                margin-right: 1rem;
+                color: #900;
+                background-color: #eee;
+                background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+                background-image: linear-gradient(#fcfcfc, #eee);
+                border: 1px solid #d5d5d5;
+                text-shadow: none;
+                &:hover {
+                    color: #fff;
+                    background-color: #b33630;
+                    background-image: -webkit-linear-gradient(#dc5f59, #b33630);
+                    background-image: linear-gradient(#dc5f59, #b33630);
+                    border-color: #cd504a;
+                }
+                &.selected {
+                    color: #fff;
+                    background-color: #b33630;
+                    background-image: none;
+                    border-color: #9f312c;
+                }
+            }
+        }
+    }
+}

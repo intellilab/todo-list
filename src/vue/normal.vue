@@ -17,11 +17,40 @@
                 <ul class="col"
                     v-for="week in date.weeks"
                 >
-                    <li v-for="day in week"><i
+                    <li v-for="day in week" :
+                        :class="{'enable': day.day != '-'}"
+                        @click.stop="handle($event, 'click-day', day.day)"
+                    ><i
                         :class="{'today': day.flag, 'hide': day.day == '-'}"
                         v-text="day.day"
                     ></i></li>
                 </ul>
+            </div>
+        </div>
+        <div class="panel active">
+            <h3>
+                <i v-text="current.year"></i>
+                <i>-</i>
+                <i v-text="current.month + 1 < 10 ? '0' + (current.month + 1) : current.month + 1"></i>
+                <i>-</i>
+                <i v-text="current.day < 10 ? '0' + current.day : current.day"></i>
+            </h3>
+            <label class="in-box input"><input type="text" placeholder="标题"
+                @focus="handle($event, 'focus-input')"
+                @blur="handle($event, 'blur-input')"
+            ></label>
+            <label class="in-box textarea"><textarea placeholder="写点什么..."
+                @focus="handle($event, 'focus-input')"
+                @blur="handle($event, 'blur-input')"
+            ></textarea></label>
+            <div class="btn-box">
+                <i class="cancel"
+                    @mousedown="handle($event, 'mousedown-btn')"
+                    @mouseup="handle($event, 'mouseup-btn', 'cancel')"
+                >取消</i><i class="ok"
+                    @mousedown="handle($event, 'mousedown-btn')"
+                    @mouseup="handle($event, 'mouseup-btn')"
+                >确定</i>
             </div>
         </div>
     </div>
@@ -31,6 +60,7 @@
     export default {
         data() {
             return {
+                panel: null,
                 weeks: [
                     'Monday', 'Tuesday',
                     'Wednesday', 'Thursday',
@@ -54,13 +84,11 @@
                     week: null
                 },
                 date: {
-                    el: document.querySelectorAll('.date .col'),
                     weeks: [
                         [], [], [],
                         [], [], [],
                         []
-                    ],
-                    days: []
+                    ]
                 }
             }
         },
@@ -136,11 +164,52 @@
                 this.current.month = this.today.month
                 this.current.day = this.today.day
                 this.render()
+            },
+            handle(e, type, ...args) {
+                switch (type) {
+                    case 'click-day':
+                        {
+                            if (args[0] == '-') return
+                            this.current.day = args[0]
+                            this.panel.classList.toggle('active')
+                        }
+                        break
+                    case 'focus-input':
+                        {
+                            e.target.parentElement.classList.add('focus')
+                        }
+                        break
+                    case 'blur-input':
+                        {
+                            e.target.parentElement.classList.remove('focus')
+                        }
+                        break
+                    case 'mousedown-btn':
+                        {
+                            e.target.classList.add('selected')
+                        }
+                        break
+                    case 'mouseup-btn':
+                        {
+                            if (args.length && args[0] == 'cancel') {
+                                this.panel.classList.remove('active')
+                            }
+                            e.target.classList.remove('selected')
+                        }
+                        break
+                    default:
+                        break
+                }
             }
         },
         ready() {
             this.init()
             this.render()
+            this.panel = document.querySelector('.panel')
+            document.addEventListener('click', e => {
+                if (e.target !== this.panel && !this.panel.contains(e.target))
+                    this.panel.classList.remove('active')
+            })
         }
     }
 </script>
