@@ -15,19 +15,19 @@
             </ul>
             <div class="date">
                 <ul class="col"
-                    v-for="week in date.weeks"
+                    v-for="($w, week) in date.weeks"
                 >
-                    <li v-for="day in week" :
+                    <li v-for="($d, day) in week" :
                         :class="{'enable': day.day != '-'}"
-                        @click.stop="handle($event, 'click-day', day.day)"
+                        @click.stop="handle($event, 'click-day', day.day, $w, $d)"
                     ><i
                         :class="{'today': day.flag, 'hide': day.day == '-'}"
                         v-text="day.day"
-                    ></i></li>
+                    ></i><i class="fa fa-star" v-show="day.star"></i></li>
                 </ul>
             </div>
         </div>
-        <div class="mask active">
+        <div class="mask">
             <div class="panel">
                 <h3>
                     <i v-text="current.year"></i>
@@ -37,20 +37,20 @@
                     <i v-text="current.day < 10 ? '0' + current.day : current.day"></i>
                 </h3>
                 <label class="in-box input"><input type="text" placeholder="标题"
+                    v-model="task.title"
                     @focus="handle($event, 'focus-input')"
                     @blur="handle($event, 'blur-input')"
                 ></label>
                 <label class="in-box textarea"><textarea placeholder="写点什么..."
+                    v-model="task.content"
                     @focus="handle($event, 'focus-input')"
                     @blur="handle($event, 'blur-input')"
                 ></textarea></label>
                 <div class="btn-box">
                     <button class="cancel"
-                        @mousedown="handle($event, 'mousedown-btn')"
-                        @mouseup="handle($event, 'mouseup-btn', 'cancel')"
+                        @click="handle($event, 'click-btn', 'cancel')"
                     >取消</button><button class="ok"
-                        @mousedown="handle($event, 'mousedown-btn')"
-                        @mouseup="handle($event, 'mouseup-btn')"
+                        @click="handle($event, 'click-btn', 'ok')"
                     >确定</button>
                 </div>
             </div>
@@ -64,6 +64,8 @@
             return {
                 panel: null,
                 mask: null,
+                db: null,
+                store: null,
                 weeks: [
                     'Monday', 'Tuesday',
                     'Wednesday', 'Thursday',
@@ -86,13 +88,21 @@
                     day: null,
                     week: null
                 },
+
                 date: {
                     weeks: [
                         [], [], [],
                         [], [], [],
                         []
                     ]
-                }
+                },
+                indices: {week: 0, day: 0},
+                task: {
+                    title: '',
+                    content: '',
+                    // 当前月的任务列表
+                    years: []
+                },
             }
         },
         methods: {
@@ -112,22 +122,47 @@
                     this.today.month == date.getMonth() &&
                     this.today.day == date.getDate()
             },
+            getTasks(year) {
+                if (!this.store) {
+                    alert('很抱歉，我的内心不配我的外表。')
+                    return
+                }
+                const index = this.store.index('year')
+                if (index) {
+                    const range = IDBKeyRange.only(year)
+                    index.openCursor(range).onsuccess = e => {
+                        const cursor = e.target.result
+                        if (cursor) {
+                            this.task.years.push(cursor.value)
+                            cursor.continue()
+                        } this.render() // 获取数据结束即渲染
+                    }
+                }
+            },
             render() {
 
                 const date = new Date(this.current.year,
                     this.current.month, 1)
-                let index = date.getDay() - 1
-                let i = 0
+                let
+                    index = date.getDay() - 1,
+                    i = 0
 
                 this.clear()
                 index < 0 ? index = 6 : null
                 this.date.weeks[index].push({
                     day: date.getDate(),
-                    flag: false
+                    flag: false,
+                    star: false
                 })
+
                 // 前向填充
                 while (i < index) {
-                    this.date.weeks[i].push({day: '-', flag: false})
+                    this.date.weeks[i].push({
+                        day: '-',
+                        flag: false,
+                        star: false
+                    })
+
                     i++
                 }
                 // 循环填充
@@ -138,11 +173,28 @@
                     index < 0 ? index = 6 : null
                     this.date.weeks[index].push({
                         day: date.getDate(),
-                        flag: this.isToday(date)
+                        flag: this.isToday(date),
+                        star: false
                     })
                 }
                 // 后向填充
-                while (index < 6) this.date.weeks[++index].push({day: '-', flag: false})
+                while (index < 6) {
+                    this.date.weeks[++index].push({
+                        day: '-',
+                        flag: false,
+                        star: false
+                    })
+                }
+                /*
+                * 日历渲染结束
+                * 遍历任务列表
+                */
+                this.task.years.forEach(e => {
+                    if (e.month === this.current.month)
+                        this.date.weeks[e.indices.week][e.indices.day].star = true
+                })
+                this.date.weeks = this.date.weeks
+
             },
             clear() {
                 for (let i = 0; i < this.date.weeks.length; i++)
@@ -151,22 +203,26 @@
             prev() {
                 if (this.current.month == 0) {
                     this.current.month = 11
-                    this.current.year--
-                } else this.current.month--
-                this.render()
+                    this.getTasks(--this.current.year)
+                } else {
+                    this.current.month--
+                    this.render()
+                }
             },
             next() {
                 if (this.current.month == 11) {
                     this.current.month = 0
-                    this.current.year++
-                } else this.current.month++
-                this.render()
+                    this.getTasks(++this.current.year)
+                } else {
+                    this.current.month++
+                    this.render()
+                }
             },
             refresh() {
                 this.current.year = this.today.year
                 this.current.month = this.today.month
                 this.current.day = this.today.day
-                this.render()
+                this.getTasks()
             },
             handle(e, type, ...args) {
                 switch (type) {
@@ -175,6 +231,8 @@
                             if (args[0] == '-') return
                             this.current.day = args[0]
                             this.mask.classList.toggle('active')
+                            this.indices.week = args[1]
+                            this.indices.day = args[2]
                         }
                         break
                     case 'focus-input':
@@ -187,36 +245,84 @@
                             e.target.parentElement.classList.remove('focus')
                         }
                         break
-                    case 'mousedown-btn':
-                        {
-                            // e.target.classList.add('selected')
-                        }
-                        break
-                    case 'mouseup-btn':
+                    case 'click-btn':
                         {
                             if (args.length && args[0] == 'cancel') {
                                 this.mask.classList.remove('active')
                             }
-                            // e.target.classList.remove('selected')
+                            if (args.length && args[0] == 'ok') {
+                                if (/^\s*$/.test(this.task.content)) {
+                                    alert('没写内容是不会提交的……')
+                                    return
+                                }
+                                const week = this.date.weeks[this.indices.week]
+                                week[this.indices.day].star = true
+                                this.date.weeks.$set(this.indices.week, week)
+                                if (this.store) {
+                                    this.store.put({
+                                        date: `${this.current.year}${this.current.month + 1 < 10 ? '0' + (this.current.month + 1) : this.current.month + 1}${this.current.day < 10 ? '0' + (this.current.day) : this.current.day}`,
+                                        year: this.current.year,
+                                        month: this.current.month,
+                                        day: this.current.day,
+                                        title: this.task.title,
+                                        content: this.task.content,
+                                        indices: this.indices
+                                    }).then(results => {
+                                        if (results.err) {
+                                            alert('提交遇到问题了')
+                                            console.log(results.err)
+                                        } else this.mask.classList.remove('active')
+                                    })
+                                }
+                            }
                         }
                         break
                     default:
                         break
                 }
+            },
+            run() {
+                this.getTasks((new Date()).getFullYear())
+                this.init()
+                this.panel = document.querySelector('.panel')
+                this.mask = document.querySelector('.mask')
+                document.addEventListener('click', e => {
+                    if (e.target !== this.panel && !this.panel.contains(e.target))
+                        this.mask.classList.remove('active')
+                })
             }
         },
         ready() {
-            this.init()
-            this.render()
-            this.panel = document.querySelector('.panel')
-            this.mask = document.querySelector('.mask')
-            document.addEventListener('click', e => {
-                if (e.target !== this.panel && !this.panel.contains(e.target))
-                    this.mask.classList.remove('active')
+
+            Flex.open('todo-list').then(results => {
+                if (results.err) {
+                    alert('很抱歉，我的内心不配我的外表。')
+                    console.log(results.err)
+                } else {
+                    this.db = results.db
+                    this.store = this.db.getStore('task')
+                    if (!this.store) {
+                        this.db.createStore('task', {keyPath: 'date', autoIncrement: true})
+                            .then(results => {
+                                if (results.err) {
+                                    alert('很抱歉，我的内心不配我的外表。')
+                                    console.log(results.err)
+                                } else {
+                                    this.store = results.store
+                                    this.store.createIndex([
+                                        {name: 'year', key: 'year', opts: {unique: false}}
+                                    ]).then(results => {
+                                        if (results.err) {
+                                            alert('很抱歉，我的内心不配我的外表。')
+                                            console.log(results.err)
+                                        } else this.run()
+                                    })
+                                }
+                            })
+                    } else this.run()
+                }
             })
-            document.addEventListener('mouseup', e => {
-                document.querySelectorAll('button')
-            })
+
         }
     }
 </script>

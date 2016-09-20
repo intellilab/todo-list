@@ -11,10 +11,12 @@
         <link rel="stylesheet" href="https://cdn.lufei.so/css/font.css" charset="utf-8">
     </head>
     <body>
-        <normal v-if="normal"></normal>
-        <min v-if="!normal"></min>
+        <normal v-show="normal"></normal>
+        <min v-show="!normal"></min>
         <!-- js -->
         <script src="https://cdn.lufei.so/js/vue.min.js"></script>
+        <!-- <script src="/ideas/funs/flexDB/flexDB.js"></script> -->
+        <script src="flexDB.js"></script>
         <script src="index.js"></script>
     </body>
 </html>
