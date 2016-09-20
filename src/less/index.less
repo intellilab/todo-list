@@ -255,6 +255,23 @@ body {
     }
 }
 
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    visibility: hidden;
+    &.active {
+        visibility: visible;
+        .panel {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+}
+
 .panel {
     max-width: 800px;
     min-height: 300px;
@@ -262,13 +279,13 @@ body {
     height: 50%;
     background-color: #fff;
     border-radius: .3rem;
-    margin: auto;
-    position: fixed;
+    position: absolute;
     z-index: 9;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    margin: auto;
     box-shadow: 3px 3px 6px rgba(0, 0, 0, .6);
     padding: 1rem;
     box-sizing: border-box;
@@ -279,11 +296,6 @@ body {
     opacity: 0;
     transition: transform .5s, opacity .5s;
     .v-flex;
-    &.active {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
     h3 {
         color: green;
         text-align: center;
@@ -327,18 +339,19 @@ body {
     textarea {
         margin: 0;
         padding: .5rem;
-        box-sizing: border-box;
         resize: none;
         border: 0;
         font-size: .9rem;
         font-family: "monospace", "Consolas", "Microsoft YaHei";
         color: #555;
+        display: block;
         .flex;
     }
     .btn-box {
         margin-top: 1rem;
         text-align: right;
-        i {
+
+        button {
             cursor: pointer;
             display: inline-block;
             color: #fff;
@@ -350,6 +363,7 @@ body {
             line-height: 20px;
 
             -webkit-user-select: none;
+            -webkit-appearance: button;
 
             &.ok {
                 background-color: #60b044;
@@ -357,20 +371,21 @@ body {
                 background-image: linear-gradient(#8add6d, #60b044);
                 border-color: #5ca941;
                 border: 1px solid #4a993e;
+
                 &:hover {
                     color: #fff;
                     background-color: #569e3d;
                     background-image: -webkit-linear-gradient(#79d858, #569e3d);
                     background-image: linear-gradient(#79d858, #569e3d);
                 }
-                &.selected {
+
+                &:active {
                     text-shadow: 0 1px 0 rgba(0,0,0,0.15);
                     background-color: #569e3d;
                     background-image: none;
                     border-color: #418737;
                 }
             }
-
             &.cancel {
                 margin-right: 1rem;
                 color: #900;
@@ -386,13 +401,14 @@ body {
                     background-image: linear-gradient(#dc5f59, #b33630);
                     border-color: #cd504a;
                 }
-                &.selected {
+                &:active {
                     color: #fff;
                     background-color: #b33630;
                     background-image: none;
                     border-color: #9f312c;
                 }
             }
+
         }
     }
 }

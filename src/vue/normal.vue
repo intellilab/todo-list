@@ -27,30 +27,32 @@
                 </ul>
             </div>
         </div>
-        <div class="panel active">
-            <h3>
-                <i v-text="current.year"></i>
-                <i>-</i>
-                <i v-text="current.month + 1 < 10 ? '0' + (current.month + 1) : current.month + 1"></i>
-                <i>-</i>
-                <i v-text="current.day < 10 ? '0' + current.day : current.day"></i>
-            </h3>
-            <label class="in-box input"><input type="text" placeholder="标题"
-                @focus="handle($event, 'focus-input')"
-                @blur="handle($event, 'blur-input')"
-            ></label>
-            <label class="in-box textarea"><textarea placeholder="写点什么..."
-                @focus="handle($event, 'focus-input')"
-                @blur="handle($event, 'blur-input')"
-            ></textarea></label>
-            <div class="btn-box">
-                <i class="cancel"
-                    @mousedown="handle($event, 'mousedown-btn')"
-                    @mouseup="handle($event, 'mouseup-btn', 'cancel')"
-                >取消</i><i class="ok"
-                    @mousedown="handle($event, 'mousedown-btn')"
-                    @mouseup="handle($event, 'mouseup-btn')"
-                >确定</i>
+        <div class="mask active">
+            <div class="panel">
+                <h3>
+                    <i v-text="current.year"></i>
+                    <i>-</i>
+                    <i v-text="current.month + 1 < 10 ? '0' + (current.month + 1) : current.month + 1"></i>
+                    <i>-</i>
+                    <i v-text="current.day < 10 ? '0' + current.day : current.day"></i>
+                </h3>
+                <label class="in-box input"><input type="text" placeholder="标题"
+                    @focus="handle($event, 'focus-input')"
+                    @blur="handle($event, 'blur-input')"
+                ></label>
+                <label class="in-box textarea"><textarea placeholder="写点什么..."
+                    @focus="handle($event, 'focus-input')"
+                    @blur="handle($event, 'blur-input')"
+                ></textarea></label>
+                <div class="btn-box">
+                    <button class="cancel"
+                        @mousedown="handle($event, 'mousedown-btn')"
+                        @mouseup="handle($event, 'mouseup-btn', 'cancel')"
+                    >取消</button><button class="ok"
+                        @mousedown="handle($event, 'mousedown-btn')"
+                        @mouseup="handle($event, 'mouseup-btn')"
+                    >确定</button>
+                </div>
             </div>
         </div>
     </div>
@@ -61,6 +63,7 @@
         data() {
             return {
                 panel: null,
+                mask: null,
                 weeks: [
                     'Monday', 'Tuesday',
                     'Wednesday', 'Thursday',
@@ -171,7 +174,7 @@
                         {
                             if (args[0] == '-') return
                             this.current.day = args[0]
-                            this.panel.classList.toggle('active')
+                            this.mask.classList.toggle('active')
                         }
                         break
                     case 'focus-input':
@@ -186,15 +189,15 @@
                         break
                     case 'mousedown-btn':
                         {
-                            e.target.classList.add('selected')
+                            // e.target.classList.add('selected')
                         }
                         break
                     case 'mouseup-btn':
                         {
                             if (args.length && args[0] == 'cancel') {
-                                this.panel.classList.remove('active')
+                                this.mask.classList.remove('active')
                             }
-                            e.target.classList.remove('selected')
+                            // e.target.classList.remove('selected')
                         }
                         break
                     default:
@@ -206,9 +209,13 @@
             this.init()
             this.render()
             this.panel = document.querySelector('.panel')
+            this.mask = document.querySelector('.mask')
             document.addEventListener('click', e => {
                 if (e.target !== this.panel && !this.panel.contains(e.target))
-                    this.panel.classList.remove('active')
+                    this.mask.classList.remove('active')
+            })
+            document.addEventListener('mouseup', e => {
+                document.querySelectorAll('button')
             })
         }
     }
