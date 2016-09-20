@@ -19,7 +19,7 @@
                 >
                     <li v-for="($d, day) in week" :
                         :class="{'enable': day.day != '-'}"
-                        @click.stop="handle($event, 'click-day', day.day, $w, $d)"
+                        @click.stop="handle($event, 'click-day', day.day, $w, $d, day.star)"
                     ><i
                         :class="{'today': day.flag, 'hide': day.day == '-'}"
                         v-text="day.day"
@@ -37,21 +37,28 @@
                     <i v-text="current.day < 10 ? '0' + current.day : current.day"></i>
                 </h3>
                 <label class="in-box input"><input type="text" placeholder="标题"
-                    v-model="task.title"
+                    v-model="task.in.title" maxlength="20"
                     @focus="handle($event, 'focus-input')"
                     @blur="handle($event, 'blur-input')"
-                ></label>
+                ><i v-text="task.out.title"></i></label>
                 <label class="in-box textarea"><textarea placeholder="写点什么..."
-                    v-model="task.content"
+                    v-model="task.in.content"
                     @focus="handle($event, 'focus-input')"
                     @blur="handle($event, 'blur-input')"
-                ></textarea></label>
-                <div class="btn-box">
+                ></textarea><i v-text="task.out.content"></i></label>
+                <div class="btn-box editor">
                     <button class="cancel"
                         @click="handle($event, 'click-btn', 'cancel')"
                     >取消</button><button class="ok"
                         @click="handle($event, 'click-btn', 'ok')"
                     >确定</button>
+                </div>
+                <div class="btn-box show">
+                    <button class="cancel"
+                        @click="handle($event, 'click-btn', 'delete')"
+                    >删除</button><button class="ok"
+                        @click="handle($event, 'click-btn', 'editor')"
+                    >编辑</button>
                 </div>
             </div>
         </div>
@@ -98,8 +105,16 @@
                 },
                 indices: {week: 0, day: 0},
                 task: {
-                    title: '',
-                    content: '',
+                    in: {
+                        title: '',
+                        content: '',
+
+                    },
+                    out: {
+                        title: '',
+                        content: '',
+                        id: ''
+                    },
                     // 当前月的任务列表
                     years: []
                 },
@@ -128,6 +143,8 @@
                     return
                 }
                 const index = this.store.index('year')
+                // 开始之前清空已有数据
+                this.task.years = []
                 if (index) {
                     const range = IDBKeyRange.only(year)
                     index.openCursor(range).onsuccess = e => {
@@ -230,9 +247,20 @@
                         {
                             if (args[0] == '-') return
                             this.current.day = args[0]
-                            this.mask.classList.toggle('active')
                             this.indices.week = args[1]
                             this.indices.day = args[2]
+                            if (args[3]) {
+                                this.task.years.forEach(e => {
+                                    if (e.year == this.current.year &&
+                                        e.month == this.current.month &&
+                                        e.day == this.current.day) {
+                                        this.task.out.title = e.title
+                                        this.task.out.content = e.content
+                                        this.task.out.id = e.date
+                                    }
+                                })
+                                this.mask.classList.add('show')
+                            } else this.mask.classList.add('editor')
                         }
                         break
                     case 'focus-input':
@@ -248,7 +276,7 @@
                     case 'click-btn':
                         {
                             if (args.length && args[0] == 'cancel') {
-                                this.mask.classList.remove('active')
+                                this.mask.classList.remove('editor')
                             }
                             if (args.length && args[0] == 'ok') {
                                 if (/^\s*$/.test(this.task.content)) {
@@ -264,14 +292,41 @@
                                         year: this.current.year,
                                         month: this.current.month,
                                         day: this.current.day,
-                                        title: this.task.title,
-                                        content: this.task.content,
+                                        title: this.task.in.title,
+                                        content: this.task.in.content,
                                         indices: this.indices
                                     }).then(results => {
                                         if (results.err) {
                                             alert('提交遇到问题了')
                                             console.log(results.err)
-                                        } else this.mask.classList.remove('active')
+                                        } else {
+                                            this.mask.classList.remove('editor')
+                                            this.getTasks(this.current.year)
+                                        }
+                                    })
+                                    // 提交后清除记录
+                                    this.task.in.title =
+                                        this.task.in.content = ''
+
+                                }
+                            }
+                            if (args.length && args[0] == 'editor') {
+                                this.task.in.title = this.task.out.title
+                                this.task.in.content = this.task.out.content
+                                this.mask.classList.remove('show')
+                                this.mask.classList.add('editor')
+                            }
+                            if (args.length && args[0] == 'delete') {
+                                if (window.confirm('确认删除？')) {
+                                    this.store.delete(this.task.out.id).then(results => {
+                                        if (!results.err) {
+                                            alert('删除成功')
+                                            this.getTasks(this.current.year)
+                                            this.mask.classList.remove('show')
+                                        } else {
+                                            alert('删除失败')
+                                            console.log(results.err)
+                                        }
                                     })
                                 }
                             }
@@ -288,7 +343,7 @@
                 this.mask = document.querySelector('.mask')
                 document.addEventListener('click', e => {
                     if (e.target !== this.panel && !this.panel.contains(e.target))
-                        this.mask.classList.remove('active')
+                        this.mask.classList.remove('show', 'editor')
                 })
             }
         },

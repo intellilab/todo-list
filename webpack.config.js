@@ -3,6 +3,7 @@ const webpack = require('webpack')
 module.exports = {
     entry: {
         index     : './src/js/index.js',
+        flexDB    : '../flexDB/lib/index.js'
     },
     output: {
         path: __dirname,

@@ -265,12 +265,46 @@ body {
     width: 100%;
     height: 100%;
     visibility: hidden;
-    &.active {
+
+    &.editor, &.show {
         visibility: visible;
         .panel {
             opacity: 1;
             visibility: visible;
             transform: translateY(0);
+        }
+    }
+
+    &.editor {
+        label {
+            &.input {
+                input {
+                    display: inline-block;
+                }
+            }
+            &.textarea {
+                textarea {
+                    display: block;
+                }
+            }
+        }
+        .btn-box.editor {
+            display: block;
+        }
+    }
+    &.show {
+        label {
+            border: none;
+            box-shadow: none;
+            border-radius: none;
+            &.input, &.textarea {
+                i {
+                    display: block;
+                }
+            }
+        }
+        .btn-box.show {
+            display: block;
         }
     }
 }
@@ -308,6 +342,9 @@ body {
         margin: 0;
         padding: 0;
     }
+    .show, .editor {
+        display: none;
+    }
     .in-box {
         margin-top: 1rem;
         border: 1px solid #ddd;
@@ -327,6 +364,7 @@ body {
             border: 0;
             font-size: .9rem;
             color: #555;
+            display: none;
             font-family: "monospace", "Consolas", "Microsoft YaHei";
         }
         &.textarea {
@@ -337,6 +375,25 @@ body {
             -webkit-box-align: stretch;
             .flex;
             .v-flex;
+            i {
+                padding: .5rem;
+                box-sizing: border-box;
+                word-break: break-all;
+                word-wrap: break-word;
+                white-space: normal;
+                overflow: auto;
+                .flex;
+            }
+        }
+        &.input {
+            i {
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+        }
+        i {
+            display: none;
+            color: #555;
         }
     }
     textarea {
@@ -347,13 +404,13 @@ body {
         font-size: .9rem;
         font-family: "monospace", "Consolas", "Microsoft YaHei";
         color: #555;
-        display: block;
+        display: none;
         .flex;
     }
     .btn-box {
         margin-top: 1rem;
         text-align: right;
-
+        display: none;
         button {
             cursor: pointer;
             display: inline-block;
