@@ -281,7 +281,7 @@
                                 this.mask.classList.remove('editor')
                             }
                             if (args.length && args[0] == 'ok') {
-                                if (/^\s*$/.test(this.task.content)) {
+                                if (/^\s*$/.test(this.task.in.content)) {
                                     alert('没写内容是不会提交的……')
                                     return
                                 }
