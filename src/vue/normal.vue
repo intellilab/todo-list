@@ -45,7 +45,7 @@
                     v-model="task.in.content"
                     @focus="handle($event, 'focus-input')"
                     @blur="handle($event, 'blur-input')"
-                ></textarea><i v-text="task.out.content"></i></label>
+                ></textarea><i v-html="task.out.content"></i></label>
                 <div class="btn-box editor">
                     <button class="cancel"
                         @click="handle($event, 'click-btn', 'cancel')"
@@ -150,6 +150,8 @@
                     index.openCursor(range).onsuccess = e => {
                         const cursor = e.target.result
                         if (cursor) {
+                            cursor.value.content =
+                                cursor.value.content.replace(/\n/g, '<br>')
                             this.task.years.push(cursor.value)
                             cursor.continue()
                         } this.render() // 获取数据结束即渲染
