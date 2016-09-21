@@ -315,6 +315,7 @@
                             if (args.length && args[0] == 'editor') {
                                 this.task.in.title = this.task.out.title
                                 this.task.in.content = this.task.out.content
+                                    .replace(/<br>/g, '\n')
                                 this.mask.classList.remove('show')
                                 this.mask.classList.add('editor')
                             }
