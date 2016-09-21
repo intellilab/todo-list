@@ -154,7 +154,7 @@
                             cursor.continue()
                         } this.render() // 获取数据结束即渲染
                     }
-                }
+                } else alert('很抱歉，我的内心不配我的外表。')
             },
             render() {
 
