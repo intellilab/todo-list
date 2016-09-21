@@ -241,7 +241,7 @@
                 this.current.year = this.today.year
                 this.current.month = this.today.month
                 this.current.day = this.today.day
-                this.getTasks()
+                this.getTasks(this.current.year)
             },
             handle(e, type, ...args) {
                 switch (type) {
